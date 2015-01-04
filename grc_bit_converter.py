@@ -122,17 +122,11 @@ if coded:
     for cnt in range(len(ind)):
         if ord(ind[cnt]) > 1:
             # Build each packet
-            if cnt:
-                packets.append(ind[cnt:cnt+(max_packet*8)])
-            else:
-                packets.append(ind[cnt:(cnt+1)+(max_packet*8)])
+            packets.append(ind[cnt:(cnt+1)+(max_packet*8)])
 else:
     # Process all bytes as packets
     for cnt in range(bypass,len(ind),(max_packet*8)):
-        if cnt:
-            packets.append(ind[cnt:cnt+(max_packet*8)])
-        else:
-            packets.append(ind[cnt:(cnt+1)+(max_packet*8)])
+        packets.append(ind[cnt:(cnt+1)+(max_packet*8)])
 
 # Process all packets
 print "Starting Packet Parsing."
