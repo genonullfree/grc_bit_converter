@@ -19,6 +19,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Point Of Contact:    Don C. Weber <don@inguardians.com>
+#
+# Modified by Geno Nullfree <nullfree.geno@gmail.com> 20150104
+# + Added command line option (-o) to write out the packets to a 
+#   file. Doing this suppresses all print statements.
 
 
 # Requirement is bitarry 0.8
@@ -58,6 +62,7 @@ def usage():
     print "                 These must be combined to create a normal byte."
     print ""
     print "-f <file>:       Input file (required)"
+    print "-o <file>:       Output file (enabling this will silence all other output)"
     print "-p <size>:       Size of the packet (defaults to 250)"
     print "-s <string>:     Search for a string. This will also supress packet printing."
     print "-i:              Invert the bits of the byte. This may be necessary if high"
@@ -68,15 +73,18 @@ def usage():
 
 # Set values
 inf        = ''         # input file
+outf       = ''         # output file
 sdata      = ''         # data to search for
 coded      = False
 search     = False
 invert     = False      # Is 0 High or 1 High? Inverting lets us switch back and forth
 bypass     = 0
 max_packet = 250        # Known value from test packets
+quiet      = False      # This suppresses the print statements
 
 # Control values
 ind        = ''         # incoming file data
+outd       = ''         # output file data
 cnt        = 0          # counter
 temp_byte  = ''         # Temp byte of bit string to be converted to actual byte
 new_byte   = ''         # New data byte
@@ -87,7 +95,7 @@ preambles  = ['\xaa\xaa','\x55\x55']
 syncwords  = ['\xd3\x91','\xa7\x22','\x4e\x44','\x9c\x88']
 
 # Process Options
-ops = ['-s','-i','-f','-p','-c','-b']
+ops = ['-s','-i','-f','-p','-c','-b','-o']
 
 while len(sys.argv) > 1:
     op = sys.argv.pop(1)
@@ -105,6 +113,9 @@ while len(sys.argv) > 1:
         coded = True
     if op == '-b':
         bypass = int(sys.argv.pop(1))
+    if op == '-o':
+        outf = sys.argv.pop(1)
+        quiet = True
     if op not in ops:
         print "Unknown option:"
         usage()
@@ -129,7 +140,8 @@ else:
         packets.append(ind[cnt:(cnt+1)+(max_packet*8)])
 
 # Process all packets
-print "Starting Packet Parsing."
+if not quiet:
+    print "Starting Packet Parsing."
 for packet in packets:
     #print "\nNew Packet:"
 
@@ -148,7 +160,6 @@ for packet in packets:
                 new_byte.invert()
             
             # For now we just want to see printable characters
-            # TODO: Remove and write actual bytes to STDOUT so they can be redirected
             #if new_byte > 31 or new_byte < 126:
                 #print chr(new_byte),
             #dpacket.append(chr(new_byte))
@@ -169,13 +180,22 @@ for packet in packets:
     else:
         dpackets.append(indata)
 
-for e in range(len(dpackets)):
-    print "\nNew Packet:",e
-    print "Size:",len(dpackets[e])
-    print "Occurances:",str(dpackets.count(dpackets[e]))
-    print dpackets[e]
-    print ""
-    print print_data(dpackets[e])
+if not quiet:
+    for e in range(len(dpackets)):
+        print "\nNew Packet:",e
+        print "Size:",len(dpackets[e])
+        print "Occurances:",str(dpackets.count(dpackets[e]))
+        print dpackets[e]
+        print ""
+        print print_data(dpackets[e])
 
-print "Done."
+    print "Done."
+else:
+    try:
+        outd = open(outf,'wb')
+    except:
+        print "Error writing to  file:",outf
+        usage()
 
+    outd.write(''.join(dpackets))
+    outd.close()
