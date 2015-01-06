@@ -6,7 +6,7 @@ GRC Bit Converter (grc_bit_converter.py) is a python script for parsing and prin
 * Author: Don C. Weber (cutaway) - [@cutaway](http://twitter.com/cutaway)
 * Company: [InGuardians, Inc.](http://inguardians.com)
 * Start Date: May 15, 2014
-* Contributers: Be the first
+* Contributers: Geno Nullfree <nullfree.geno@gmail.com>
 
 ## Requirements:
 
@@ -18,6 +18,7 @@ GRC Bit Converter (grc_bit_converter.py) is a python script for parsing and prin
 ```
 grc_bit_converter.py: 
     -f <file>:       Input file (required)"
+    -o <file>:       Output file (enabling this will silence all other output)"
     -p <size>:       Size of the packet (defaults to 250)"
     -s <string>:     Search for a string. This will also supress packet printing."
     -i:              Invert the bits of the byte. This may be necessary if high"
